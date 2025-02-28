@@ -1,7 +1,8 @@
 //definición de constantes
 const btnAbrirDialog = document.getElementById("abrirDialog")
 const btnCerrarDialog = document.getElementById("cerrarDialog")
-const dialogNuevaMesa= document.getElementById("dialogo") 
+const dialogNuevaMesa= document.getElementById("dialogo");
+const dialogCancelarReserva = document.getElementById("dialogoCancelar");
 const selectHorarios = document.getElementById("horaReserva");
 const fecha_reserva = document.getElementById("fechaReserva");
 const numComensales = document.getElementById("numComensales");
@@ -183,7 +184,6 @@ async function cargarReservasCliente(){
 
                 <td>
                   <div class="mb-3 d-flex justify-content-center">
-                      <button id="btnEditarReserva" class="btn btn-success m-1">Editar</button>
                       <button id="btnCancelaReserva" onclick="eliminarReserva(${fila.id})" class="btn btn-danger m-1">Cancelar</button>
                   </div>
                 
@@ -252,8 +252,12 @@ async function cargarMesasDisponibles(fecha_reserva, id_horario) {
                 btnMesa.addEventListener("click",() => {
 
                     //recorro todos los botones y voy replazando la clase a la clase del boton por defecto. De esta manera evito tener seleccionado mas de uno
-                    document.querySelectorAll("button").forEach(button => button.classList.replace("btn-success", "btn-secondary"));
+                    cajaMesas.querySelectorAll("button").forEach(button => button.classList.replace("btn-success", "btn-secondary"));
 
+                    //elimino todas los div(alertas de cajas) que pudieran existir previamente 
+                    cajaMesas.querySelectorAll("div").forEach(alerta =>alerta.remove());
+
+                    //creo una alerta que indica la información de la caja seleccionada, luego guardo el id caja seleccionado y por último cambio la clase del boton a succes para indicar visualmente que se ha seleccionado la caja
                     let infoMesa = document.createElement("div")
                         infoMesa.innerHTML = `<div class="position-absolute top-50 start-50 translate-middle alert alert-info alert-dismissible fade show" role="alert">
                         <strong>Descripción de la mesa:</strong><br>
@@ -324,13 +328,12 @@ async function nuevaReserva(){
         fila.innerHTML = `
         <td>${nuevaReserva.fechaReserva}</td>
         <td>${nuevaReserva.cliente.nombre}</td>
-        <td>${nuevaReserva.tramoHorario}</td>
+        <td>${nuevaReserva.horario.tramoHorario}</td>
         <td>${nuevaReserva.mesa.numeroMesa}</td>
         <td>${nuevaReserva.numeroPersonas}</td>
 
         <td>
           <div class="mb-3 d-flex justify-content-center">
-              <button id="btnEditarReserva" class="btn btn-success m-1">Editar</button>
               <button id="btnCancelaReserva" class="btn btn-danger m-1">Cancelar</button>
           </div>
         
@@ -351,30 +354,43 @@ async function nuevaReserva(){
 
 }
 
-async function eliminarReserva(id_reserva){
+function eliminarReserva(id_reserva){
 
-    try {
 
-        const response = await fetch('http://localhost:8080/reserva/'+id_reserva, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${token}`
+    dialogoCancelar.showModal();
+
+    document.getElementById("btnCancelarReservar").addEventListener("click", async()=>{
+
+        try {
+
+
+
+            const response = await fetch('http://localhost:8080/reserva/'+id_reserva, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+    
+            if(!response.ok){
+    
+                throw new Error("Ha ocurrido un error al intentar eliminar la reserva");
+    
             }
-        })
-
-        if(!response.ok){
-
-            throw new Error("Ha ocurrido un error al intentar eliminar la reserva");
-
+    
+            let filaEliminada = document.getElementById(id_reserva)
+            filaEliminada.remove();
+            dialogoCancelar.close();
+            
+        } catch (error) {
+            console.error(error)
         }
 
-        let filaEliminada = document.getElementById(id_reserva)
-        filaEliminada.remove();
-        
-        
-    } catch (error) {
-        console.error(error)
-    }
+    })
+
+
+    document.getElementById("cerrarDialogCancelar").addEventListener("click",()=>dialogoCancelar.close())
+
 
 
 }
