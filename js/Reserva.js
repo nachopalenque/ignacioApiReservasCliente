@@ -21,15 +21,23 @@ let idMesa;
 
 document.getElementById("aLogout").addEventListener("click", ()=>{
 
-    let mensajeLogout = document.getElementById("mensajeLogout")
+    let mensajeLogout = document.getElementById("panelNotificacion")
     let mensajeLogoutText = document.createElement("div");
 
     mensajeLogoutText.innerHTML = `<div class="alert alert-danger alert-dismissible" role="alert">
-    <div>Se ha cerrado sesión. Cierre esta notificación para volver al login</div>
+    <div>Se ha cerrado sesión. Redirigiendo al formulario de login...</div>
    <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
    </div>`
 
    mensajeLogout.appendChild(mensajeLogoutText);
+
+
+   setTimeout(()=>{
+    mensajeLogout.innerHTML = "";
+    location.href = "index.html"
+
+}, 2000);
+
    document.getElementById("btnCloseOk").addEventListener("click", ()=>{
 
     localStorage.removeItem("token");
@@ -317,8 +325,30 @@ async function nuevaReserva(){
 
         if (!response.ok) {
 
+         mensajeErrorReserva("Ha ocurrido un error al guardar la reserva. Vuelva a intentarlo mas tarde o pongase en contacto con el administrador")
+
         throw new Error("Error en la autenticación");
         }
+
+        
+        let mensajeNuevaReserva = document.getElementById("panelNotificacion")
+        let mensajeNuevaReservaText = document.createElement("div");
+
+        mensajeNuevaReservaText.innerHTML = `<div class="alert alert-success alert-dismissible" role="alert">
+        <div>Se ha creado correctamente la reserva</div>
+        <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`
+
+        mensajeNuevaReserva.appendChild(mensajeNuevaReservaText);
+
+
+        setTimeout(()=>{
+            mensajeNuevaReserva.innerHTML = "";
+
+        }, 2000);
+
+
+
 
         const nuevaReserva = await response.json();
 
@@ -349,6 +379,7 @@ async function nuevaReserva(){
   
 
     } catch (error) {
+        mensajeErrorReserva("Ha ocurrido un error al guardar la reserva. Vuelva a intentarlo mas tarde o pongase en contacto con el administrador")
         console.error("Error:", error);
     }
 
@@ -374,6 +405,7 @@ function eliminarReserva(id_reserva){
     
             if(!response.ok){
     
+                mensajeErrorReserva("Ha ocurrido un error al intentar eliminar la reserva. Vuelva a intentarlo mas tarde o pongase en contacto con el administrador")
                 throw new Error("Ha ocurrido un error al intentar eliminar la reserva");
     
             }
@@ -381,8 +413,30 @@ function eliminarReserva(id_reserva){
             let filaEliminada = document.getElementById(id_reserva)
             filaEliminada.remove();
             dialogoCancelar.close();
+
+
+
+            let mensajeEliminar = document.getElementById("panelNotificacion")
+            let mensajeEliminarText = document.createElement("div");
+
+            mensajeEliminarText.innerHTML = `<div class="alert alert-success alert-dismissible" role="alert">
+            <div>Se ha cancelado correctamente la reserva</div>
+            <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`
+
+            mensajeEliminar.appendChild(mensajeEliminarText);
+
+
+            setTimeout(()=>{
+            mensajeEliminar.innerHTML = "";
+
+            }, 2000);
+
+
+
             
         } catch (error) {
+            mensajeErrorReserva("Ha ocurrido un error al eliminar la reserva. Vuelva a intentarlo mas tarde o pongase en contacto con el administrador")
             console.error(error)
         }
 
@@ -412,3 +466,24 @@ function formatearFecha(fecha) {
     // Mostrar la fecha formateada
     return fechaFormateada;
   }
+
+function mensajeErrorReserva(mensaje){
+
+    let mensajeError = document.getElementById("panelNotificacion")
+    let mensajeErrorText = document.createElement("div");
+
+    mensajeErrorText.innerHTML = `<div class="alert alert-danger alert-dismissible" role="alert">
+    <div>${mensaje}</div>
+   <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+   </div>`
+
+   mensajeError.appendChild(mensajeErrorText);
+
+
+   setTimeout(()=>{
+    mensajeError.innerHTML = "";
+
+}, 2000);
+
+
+}

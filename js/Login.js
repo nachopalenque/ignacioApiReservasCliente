@@ -48,13 +48,20 @@ async function login() {
         localStorage.setItem("user", usuario.username);
 
         mensajeLoginText.innerHTML = `<div class="alert alert-success alert-dismissible" role="alert">
-        <div>Se ha logeado correctamente. Cierre esta notificación para ir a sus reservas</div>
+        <div>Se ha logeado correctamente.Redirigiendo al panel de reservas...</div>
         <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>`
 
         mensajeLogin.appendChild(mensajeLoginText);
 
         document.getElementById("usuarioLogeado").innerHTML = "Usuario conectado: "+usuario.username
+
+        setTimeout(()=>{
+            mensajeLogin.innerHTML = "";
+            location.href = "reservas.html"
+
+        }, 2000);
+
 
         document.getElementById("btnCloseOk").addEventListener("click", ()=>{
 
