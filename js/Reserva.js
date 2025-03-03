@@ -404,7 +404,6 @@ function eliminarReserva(id_reserva){
     
             if(!response.ok){
     
-                mensajeErrorReserva("Ha ocurrido un error al intentar eliminar la reserva. Vuelva a intentarlo mas tarde o pongase en contacto con el administrador")
                 throw new Error("Ha ocurrido un error al intentar eliminar la reserva");
     
             }
@@ -435,7 +434,6 @@ function eliminarReserva(id_reserva){
 
             
         } catch (error) {
-            mensajeErrorReserva("Ha ocurrido un error al eliminar la reserva. Vuelva a intentarlo mas tarde o pongase en contacto con el administrador")
             console.error(error)
         }
 
