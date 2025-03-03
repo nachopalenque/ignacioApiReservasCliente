@@ -353,7 +353,7 @@ async function nuevaReserva(){
         const nuevaReserva = await response.json();
 
         let fila = document.createElement('tr');
-
+        fila.id = nuevaReserva.id
 
         fila.innerHTML = `
         <td>${nuevaReserva.fechaReserva}</td>
@@ -364,12 +364,11 @@ async function nuevaReserva(){
 
         <td>
           <div class="mb-3 d-flex justify-content-center">
-              <button id="btnCancelaReserva" class="btn btn-danger m-1">Cancelar</button>
+              <button id="btnCancelaReserva" onclick="eliminarReserva(${fila.id})" class="btn btn-danger m-1">Cancelar</button>
           </div>
         
         </td>`
 
-        fila.id = nuevaReserva.id
         cuerpoTabla.appendChild(fila);
         dialogNuevaMesa.close();
 

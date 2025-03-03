@@ -60,22 +60,97 @@ document.getElementById("registrar").addEventListener("click", ()=>{
         .then(datos =>{
             
             const usuario = datos;
-            localStorage.setItem("token",usuario.token);
             localStorage.setItem("user", usuario.username);
 
-            mensajeLoginText.innerHTML = `<div class="alert alert-success alert-dismissible" role="alert">
-            <div>Se ha logeado correctamente. Cierre esta notificación para ir a sus reservas</div>
-            <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`
+            //primer inicio de sesión tras registrarse para almacenar el token 
     
-            mensajeLogin.appendChild(mensajeLoginText);
-    
-    
-            document.getElementById("btnCloseOk").addEventListener("click", ()=>{
-    
-                location.href = "reservas.html"
-    
-            })
+                
+                fetch('http://localhost:8080/auth/login',
+
+                    {
+                        method:"POST",
+                        headers: {
+                            "Content-Type":"application/json"
+                        },
+                        body: JSON.stringify({username,password})
+            
+                    })
+                    .then(response =>{
+
+                        //no se ha podido iniciar sesion
+                        if(!response.ok){
+
+
+                            mensajeLoginText.innerHTML = `<div class="alert alert-danger alert-dismissible" role="alert">
+                            <div>No se ha podido iniciar sesión</div>
+                           <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                           </div>`
+                
+                           mensajeLogin.appendChild(mensajeLoginText);
+                           document.getElementById("btnCloseOk").addEventListener("click", ()=>{
+                
+                                document.getElementById("username").value = ""
+                                document.getElementById("password").value = ""
+                                mensajeLogin.innerHTML = "";
+                
+                
+                           })
+
+                           setTimeout(mensajeLogin.innerHTML = "", 2000);
+
+                        }
+
+                        //se ha podido iniciar sesion, guardamos el token y redirigimos al panel de reservas del usuario.
+
+                        else {
+
+                            return response.json()
+
+                        }
+
+
+
+
+
+                    })
+
+                    .then(datos =>{
+
+
+                        const sesion = datos
+                        localStorage.setItem("token",sesion.token);
+
+                        mensajeLoginText.innerHTML = `<div class="alert alert-success alert-dismissible" role="alert">
+                        <div>Se ha logeado correctamente. Redirigiendo al panel de reservas...</div>
+                        <button type="button" id="btnCloseOk" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`
+                
+                        mensajeLogin.appendChild(mensajeLoginText);
+                
+                
+                        document.getElementById("btnCloseOk").addEventListener("click", ()=>{
+                
+                            location.href = "reservas.html"
+                
+                        })
+        
+                        setTimeout(()=>{
+                            mensajeLoginText.innerHTML = "";
+                            location.href = "reservas.html"
+                        }, 2000)
+
+
+
+
+                    })
+
+                    .catch(error =>{
+                        console.error(error)
+                    })
+
+                
+                
+            
 
 
         } )
@@ -85,40 +160,4 @@ document.getElementById("registrar").addEventListener("click", ()=>{
         })
     }
 )
-
-async function iniciarSesion(username,password){
-
-
-    try{
-
-        const response = await fetch('http://localhost:8080/auth/login',
-
-            {
-                method:"POST",
-                headers: {
-                    "Content-Type":"application/json"
-                },
-                body: JSON.stringify(username,password)
-    
-            })
-    
-            if(!response.ok){
-                alert("Usuario o contraseña incorrectos")
-                throw new Error("Error al logearse")
-            }
-
-            const data = await response.json();
-            localStorage.setItem("token",data.token);
-            location.href = "reservas.html"
-
-
-
-    }
-    catch(error){
-        console.error(error);
-    }
-
-
-
-}
 
